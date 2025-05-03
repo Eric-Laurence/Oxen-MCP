@@ -23,7 +23,8 @@ class Configuration:
     def __init__(self) -> None:
         """Initialize configuration with environment variables."""
         self.load_env()
-        self.api_key = os.getenv("LLM_API_KEY")
+        self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
 
     @staticmethod
     def load_env() -> None:
@@ -48,8 +49,8 @@ class Configuration:
             return json.load(f)
 
     @property
-    def llm_api_key(self) -> str:
-        """Get the LLM API key.
+    def anthropic_key(self) -> str:
+        """Get the Anthropic API key.
 
         Returns:
             The API key as a string.
@@ -57,9 +58,23 @@ class Configuration:
         Raises:
             ValueError: If the API key is not found in environment variables.
         """
-        if not self.api_key:
-            raise ValueError("LLM_API_KEY not found in environment variables")
-        return self.api_key
+        if not self.anthropic_api_key:
+            raise ValueError("ANTHROPIC_API_KEY not found in environment variables")
+        return self.anthropic_api_key
+        
+    @property
+    def get_openai_api_key(self) -> str:
+        """Get the OpenAI API key.
+
+        Returns:
+            The API key as a string.
+
+        Raises:
+            ValueError: If the API key is not found in environment variables.
+        """
+        if not self.openai_api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
+        return self.openai_api_key
 
 
 class Server:
@@ -237,20 +252,35 @@ class LLMClient:
         Raises:
             httpx.RequestError: If the request to the LLM fails.
         """
-        url = "https://api.groq.com/openai/v1/chat/completions"
+        url = "https://api.anthropic.com/v1/messages"
 
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
+            "x-api-key": self.api_key,
+            "anthropic-version": "2023-06-01"
         }
+        
+        # Convert OpenAI format messages to Anthropic format
+        anthropic_messages = []
+        system_content = ""
+        
+        for msg in messages:
+            role = msg["role"]
+            content = msg["content"]
+            
+            if role == "system":
+                system_content = content
+            elif role == "user":
+                anthropic_messages.append({"role": "user", "content": content})
+            elif role == "assistant":
+                anthropic_messages.append({"role": "assistant", "content": content})
+        
         payload = {
-            "messages": messages,
-            "model": "llama-3.2-90b-vision-preview",
+            "messages": anthropic_messages,
+            "model": "claude-3-7-sonnet-20250219",
+            "system": system_content,
             "temperature": 0.7,
-            "max_tokens": 4096,
-            "top_p": 1,
-            "stream": False,
-            "stop": None,
+            "max_tokens": 4096
         }
 
         try:
@@ -258,7 +288,7 @@ class LLMClient:
                 response = client.post(url, headers=headers, json=payload)
                 response.raise_for_status()
                 data = response.json()
-                return data["choices"][0]["message"]["content"]
+                return data["content"][0]["text"]
 
         except httpx.RequestError as e:
             error_message = f"Error getting LLM response: {str(e)}"
@@ -421,7 +451,7 @@ async def main() -> None:
         Server(name, srv_config)
         for name, srv_config in server_config["mcpServers"].items()
     ]
-    llm_client = LLMClient(config.llm_api_key)
+    llm_client = LLMClient(config.anthropic_key)
     chat_session = ChatSession(servers, llm_client)
     await chat_session.start()
 

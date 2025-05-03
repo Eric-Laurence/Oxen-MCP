@@ -1,7 +1,7 @@
 [project]
-name = "mcp-simple-resource"
+name = "mcp-oxen-search"
 version = "0.1.0"
-description = "A simple MCP server exposing sample text resources"
+description = "MCP server that provides semantic search using Oxen and OpenAI embeddings"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Anthropic, PBC." }]
@@ -9,7 +9,7 @@ maintainers = [
     { name = "David Soria Parra", email = "davidsp@anthropic.com" },
     { name = "Justin Spahr-Summers", email = "justin@anthropic.com" },
 ]
-keywords = ["mcp", "llm", "automation", "web", "fetch"]
+keywords = ["mcp", "llm", "automation", "web", "embedding", "search", "oxen"]
 license = { text = "MIT" }
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -18,10 +18,19 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
 ]
-dependencies = ["anyio>=4.5", "click>=8.1.0", "httpx>=0.27", "mcp"]
+dependencies = [
+    "anyio>=4.5", 
+    "click>=8.1.0", 
+    "httpx>=0.27", 
+    "mcp", 
+    "openai>=1.0.0", 
+    "oxenai", 
+    "python-dotenv", 
+    "pandas"
+]
 
 [project.scripts]
-mcp-simple-resource = "mcp_simple_resource.server:main"
+mcp-oxen-search = "mcp_simple_resource.server:main"
 
 [build-system]
 requires = ["hatchling"]

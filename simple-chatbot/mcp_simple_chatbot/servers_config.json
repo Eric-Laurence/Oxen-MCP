@@ -1,12 +1,11 @@
 {
   "mcpServers": {
-    "sqlite": {
-      "command": "uvx",
-      "args": ["mcp-server-sqlite", "--db-path", "./test.db"]
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    "oxen-search": {
+      "command": "uv",
+      "args": ["run", "mcp-oxen-search", "--repo", "username/repository", "--dataframe", "data.parquet"],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+      }
     }
   }
 }
