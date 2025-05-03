@@ -16,6 +16,11 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+load_dotenv(override=True)
+
+import reprlib, os
+print("key from env →", reprlib.repr(os.getenv("OPENAI_API_KEY")))
+
 
 class Configuration:
     """Manages configuration and environment variables for the MCP client."""
@@ -24,7 +29,7 @@ class Configuration:
         """Initialize configuration with environment variables."""
         self.load_env()
         self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.openai_api_key = os.getenv("OPENAI_API_KEY").strip().strip('"').strip("'")
 
     @staticmethod
     def load_env() -> None:
@@ -133,16 +138,11 @@ class Server:
             raise RuntimeError(f"Server {self.name} not initialized")
 
         tools_response = await self.session.list_tools()
-        tools = []
 
-        for item in tools_response:
-            if isinstance(item, tuple) and item[0] == "tools":
-                tools.extend(
-                    Tool(tool.name, tool.description, tool.inputSchema)
-                    for tool in item[1]
-                )
-
-        return tools
+        return [
+            Tool(t.name, t.description, t.inputSchema)
+            for t in tools_response.tools
+        ]
 
     async def execute_tool(
         self,

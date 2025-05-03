@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "oxen-search": {
-      "command": "uv",
-      "args": ["run", "mcp-oxen-search", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"],
+      "command": "python",
+      "args": ["/Users/doc/coding/hackathons/Oxen-MCP/simple-resource/mcp_simple_resource/server.py", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}"
       }
