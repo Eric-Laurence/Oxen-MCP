@@ -23,7 +23,8 @@ This example demonstrates how to integrate the Model Context Protocol (MCP) into
    Create a `.env` file in the root directory and add your API key:
 
    ```plaintext
-   LLM_API_KEY=your_api_key_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 3. **Configure servers:**
@@ -55,7 +56,7 @@ This example demonstrates how to integrate the Model Context Protocol (MCP) into
          "command": "uvx",
          "args": ["mcp-server-name", "--additional-args"],
          "env": {
-           "API_KEY": "your_api_key_here"
+           "API_KEY": "${API_KEY}"
          }
        }
      }
