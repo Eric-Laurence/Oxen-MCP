@@ -30,31 +30,37 @@ This example demonstrates how to integrate the Model Context Protocol (MCP) into
 3. **Configure servers:**
 
    The `servers_config.json` follows the same structure as Claude Desktop, allowing for easy integration of multiple servers. 
-   Here's an example:
+   Here's the current configuration for Oxen integration:
 
    ```json
    {
      "mcpServers": {
-       "sqlite": {
-         "command": "uvx",
-         "args": ["mcp-server-sqlite", "--db-path", "./test.db"]
-       },
-       "puppeteer": {
-         "command": "npx",
-         "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+       "oxen-search": {
+         "command": "uv",
+         "args": ["run", "mcp-oxen-search", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"],
+         "env": {
+           "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+         }
        }
      }
    }
    ```
-   Environment variables are supported as well. Pass them as you would with the Claude Desktop App.
+   Environment variables are supported as well. Note how the OpenAI API key is referenced using `${OPENAI_API_KEY}` to use the value from your .env file.
 
-   Example:
+   You can also configure multiple servers at once:
    ```json
    {
      "mcpServers": {
-       "server_name": {
-         "command": "uvx",
-         "args": ["mcp-server-name", "--additional-args"],
+       "oxen-search": {
+         "command": "uv",
+         "args": ["run", "mcp-oxen-search", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"],
+         "env": {
+           "OPENAI_API_KEY": "${OPENAI_API_KEY}"
+         }
+       },
+       "other-server": {
+         "command": "command-name",
+         "args": ["server-name", "--additional-args"],
          "env": {
            "API_KEY": "${API_KEY}"
          }
@@ -65,17 +71,27 @@ This example demonstrates how to integrate the Model Context Protocol (MCP) into
 
 ## Usage
 
-1. **Run the client:**
+1. **Make sure your server is properly configured:**
+
+   The `servers_config.json` file is already configured with the correct repository and dataframe:
+   ```json
+   "args": ["run", "mcp-oxen-search", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"]
+   ```
+
+2. **Run the client:**
 
    ```bash
+   cd mcp_simple_chatbot
    python main.py
    ```
 
-2. **Interact with the assistant:**
+   The client will automatically start the configured MCP servers and connect to them.
+
+3. **Interact with the assistant:**
    
    The assistant will automatically detect available tools and can respond to queries based on the tools provided by the configured servers.
 
-3. **Exit the session:**
+4. **Exit the session:**
 
    Type `quit` or `exit` to end the session.
 

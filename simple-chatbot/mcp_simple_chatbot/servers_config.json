@@ -2,7 +2,7 @@
   "mcpServers": {
     "oxen-search": {
       "command": "uv",
-      "args": ["run", "mcp-oxen-search", "--repo", "username/repository", "--dataframe", "data.parquet"],
+      "args": ["run", "mcp-oxen-search", "--repo", "elau/Oxen-MCP-Example", "--dataframe", "question_answer_pairs.jsonl"],
       "env": {
         "OPENAI_API_KEY": "${OPENAI_API_KEY}"
       }
